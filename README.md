@@ -45,6 +45,12 @@ Sample execution for gmail scanning Sent Mail and INBOX
 
 * `python3 extract-all-recipients.py --username foo@bar.com --password <password or app token> --imap-folder "[Gmail]/Sent Mail" --imap-folder INBOX`
 
+### Password
+The app currently requires that you enter your password on the command line which isn't great.
+
+*Users with MFA* would instead use an application token as your password.  GMail has a screen where you can get a token for program use. 
+Note that the token essentially bypasses MFA so destroy the token when you are done with your mail operations.
+
 ## Output
 
 Mailbox data is written to a csv file with the same name
