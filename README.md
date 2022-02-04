@@ -59,10 +59,13 @@ Mailbox data is written to a csv file with the same name
 
 Sample CSv
 ```
-Date,Folder,Message-ID,Subject,Recipients,From,To,Cc,Bcc,Reply-To,Sender
-2022-01-25 23:07:08, INBOX, <9887-383B7C066439@domain1.com>,Is there a librarian?,"['alumni@domain2.com', 'alumni@domain2.com', 'kevin@domain1.com']",['alumni@domain2.com'],['alumni@domain2.com'],[],[],['kevin@domain1.com'],[]
+Date,Folder,Message-ID,Subject,Recipients,Filtered,From,To,Cc,Bcc,Reply-To,Sender
+2022-01-25 23:07:08, INBOX, <9887-383B7C066439@domain1.com>,Is there a librarian?,"['alumni@domain2.com', 'alumni@domain2.com', 'kevin@domain1.com']","['alumni@domain2.com', 'alumni@domain2.com', 'kevin@domain1.com']",['alumni@domain2.com'],['alumni@domain2.com'],[],[],['kevin@domain1.com'],[]
 ```
-The _Recipients_ column contains all the addresses in the other fields.
+
+Notes
+1. The _Recipients_ column contains all the addresses in the other fields.
+1. The _Filtered_ column is identical to the _Recipients_ column as filtering is not yet implemented
 
 Debug output and other levels of loggng are written to
 * warning.log
