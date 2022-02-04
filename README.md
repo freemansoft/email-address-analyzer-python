@@ -22,7 +22,7 @@ optional arguments:
   -p PASSWORD, --password PASSWORD
                                           the email password not optional
   -if FOLDER, --imap-folder FOLDER
-                                          the folder we wish to scan
+                                          folder to scan. can repeat. double quote if contains spaces.
   -sd START_DATE, --start-date START_DATE
                                           start date Default: 2022-01-26
   -bd BEFORE_DATE --before-date BEFORE_DATE

@@ -126,7 +126,7 @@ def main():
         type=str,
         required=False,
         action="append",
-        help="the folder we wish to scan",
+        help="folder to scan. can Repeat. double quote if contains spaces.",
     )
     parser.add_argument(
         "-sd",
