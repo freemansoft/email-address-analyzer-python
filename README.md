@@ -6,6 +6,29 @@ Intended to be used looking for recipient hacking or unexpected email address.
 * Writes results to a csv file with same name as the IMAP mailbox/folder
 * Can scan multiple mailboxes in a given date range
 
+```
+┌───────────────────┐           ┌────────────────────┐
+│   Email Message   │           │     CSV File       │
+│   ┌───────────┐   │           │   ┌───────────┐    │
+│   │From       ├───┼───────────┼──►┤           │    │
+│   └───────────┘   │           │   │           │    │
+│   ┌───────────┐   │           │   │           │    │
+│   │To         ├───┼───────────┼──►┤ Recipients│    │
+│   └───────────┘   │           │   │ Column    │    │
+│   ┌───────────┐   │           │   │           │    │
+│   │Reply-To   ├───┼───────────┼──►┤           │    │
+│   └───────────┘   │       ▲   │   │           │    │
+│   ┌───────────┐   │       │   │   └─────┬─────┘    │
+│   │Sender     ├───┼───────┘   │         │          │
+│   └───────────┘   │       ▲   │       Filter       │
+│   ┌───────────┐   │       │   │         │          │
+│   │CC         ├───┼───────┘   │   ┌─────▼─────┐    │
+│   └───────────┘   │       ▲   │   │ Filtered  │    │
+│   ┌───────────┐   │       │   │   │ Column    │    │
+│   │BCC        ├───┼───────┘   │   │           │    │
+│   └───────────┘   │           │   └───────────┘    │
+└───────────────────┘           └────────────────────┘
+```
 
 ## USAGE 
 The default date range _one week_ of messages _prior to_ today.
