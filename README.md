@@ -54,7 +54,7 @@ Sample execution for gmail scanning Sent Mail and INBOX
 ### Password
 The app currently requires that you enter your password on the command line which isn't great.
 
-*Users with MFA* would instead use an application token as your password.  GMail has a screen where you can get a token for program use. 
+*Users with MFA* would instead use an application token as your password.  Google Account has a [security screen](https://myaccount.google.com/security?gar=1) where you can get an application token for program use. 
 Note that the token essentially bypasses MFA so destroy the token when you are done with your mail operations.
 
 ### Filtering
@@ -117,6 +117,9 @@ Debug output and other levels of loggng are written to
 * debug.log
 
 ## Source Code
+https://github.com/freemansoft/email-address-analyzer-python
+
+### Formatting
 Source auto-formatted by visual studio code using the default settings
 
 ### Unit Tests
@@ -125,4 +128,13 @@ There is some unit test coverage but not much.
 Run tests with
 ```
 python3 -m unittest
+```
+Sample Output
+```
+~/email-address-analyzer-python$ python3 -m unittest
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
 ```
