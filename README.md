@@ -8,7 +8,7 @@ Intended to be used looking for recipient hacking or unexpected email address.
 
 
 ## USAGE 
-The default date range one week of messages _prior to_ today
+The default date range _one week_ of messages _prior to_ today.
 
 ```
 usage: main.py [-h] -u USERNAME -p PASSWORD [-if FOLDER] [-sd START_DATE] [-bd BEFORE_DATE] [--imap-server IMAP_SERVER] [-oud] [-oad] [-oua] [-fa ADDRESS_FILTER] [-fd DOMAIN_FILTER]
@@ -70,12 +70,43 @@ Mailbox data is written to a csv file with the same name
 * `INBOX` --> `INBOX.csv`
 * `[Gmail]/ Sent Mail` --> `_Gmail_Sent_Mail.csv`
 
-Sample CSv
+### Sample CSv
 ```
 Date,Folder,Message-ID,Subject,Recipients,Filtered,From,To,Cc,Bcc,Reply-To,Sender
 2022-01-25 23:07:08, INBOX, <9887-383B7C066439@domain1.com>,Is there a librarian?,"['alumni@domain2.com', 'alumni@domain2.com', 'kevin@domain1.com']","['alumni@domain2.com', 'alumni@domain2.com', 'kevin@domain1.com']",['alumni@domain2.com'],['alumni@domain2.com'],[],[],['kevin@domain1.com'],[]
 ```
+### Command line log
+Looking at two GMail mailboxes from 2022-02-03 **until** today.  Output formatted for clarity
+```
+$ python3 main.py --username foo@bar.com --password <some_secret> --imap-folder "[Gmail]/Sent Mail" --imap-folder INBOX -oua -sd 2022-02-03
 
+2022-02-04 19:22:48,234; INFO    ; imap_recipient_utilities ; connect                       ;  25; Connection welcom: b'* OK Gimap ready for requests from 108.48.69.33 u11mb99851888qtw'
+2022-02-04 19:22:48,571; INFO    ; imap_recipient_utilities ; connect                       ;  28; Login returned: OK
+
+2022-02-04 19:22:48,571; INFO    ; __main__                 ; get_recipients_from_folder    ;  61; Looking at folder [Gmail]/Sent Mail
+2022-02-04 19:22:48,958; INFO    ; __main__                 ; get_recipients_from_folder    ;  83; Processed 1 from [Gmail]/Sent Mail
+2022-02-04 19:22:48,958; INFO    ; __main__                 ; main                          ; 241; 2 total recipients in [Gmail]/Sent Mail
+
+2022-02-04 19:22:49,034; INFO    ; __main__                 ; get_recipients_from_folder    ;  61; Looking at folder INBOX
+2022-02-04 19:22:50,157; INFO    ; __main__                 ; get_recipients_from_folder    ;  83; Processed 9 from INBOX
+2022-02-04 19:22:50,157; INFO    ; __main__                 ; main                          ; 241; 25 total recipients in INBOX
+
+2022-02-04 19:22:50,250; INFO    ; __main__                 ; main                          ; 248; 27 total recipients across ['[Gmail]/Sent Mail', 'INBOX']
+2022-02-04 19:22:50,250; INFO    ; __main__                 ; main                          ; 250; 10 unique recipients across ['[Gmail]/Sent Mail', 'INBOX']
+2022-02-04 19:22:50,250; INFO    ; __main__                 ; main                          ; 254; 7 unique domains across ['[Gmail]/Sent Mail', 'INBOX']
+Filtered of all UNIQUE recipients: 10
+-------------------------------
+['customercare@deathstar.gov',
+ 'donotreply-comm@xxx.com',
+ 'dsmith@xxx.com',
+ 'bounce@xxx.com',
+ 'izaak@xxx.org',
+ 'joe@xxx.com',
+ 'membership@xxxx.org',
+ 'mymy@xxx.com',
+ 'no-reply@xxxx.com',
+ 'noreply@xxxx.com']
+```
 Notes
 1. The _Recipients_ column contains all the addresses in the other fields.
 1. The _Filtered_ column is identical to the _Recipients_ column as filtering is not yet implemented

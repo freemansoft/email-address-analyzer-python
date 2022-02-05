@@ -2,23 +2,23 @@ version: 1
 disable_existing_loggers: true
 formatters:
   brief:
-    format: "%(levelname)-8s; %(name)-15s; %(message)s"
+    format: "%(levelname)-8s; %(name)-25s; %(message)s"
   single_line:
-    format: "%(asctime)s; %(levelname)-8s; %(name)-15s; %(funcName)-15s;%(lineno)4d; %(message)s"
+    format: "%(asctime)s; %(levelname)-8s; %(name)-25s; %(funcName)-30s;%(lineno)4d; %(message)s"
   multi_thread:
-    format: "%(asctime)s; %(levelname)-8s; [%(thread;)s]; %(name)-15s; %(funcName)-15s;%(lineno)-4d; %(message)s"
+    format: "%(asctime)s; %(levelname)-8s; [%(thread;)s]; %(name)-25s; %(funcName)-30s;%(lineno)-4d; %(message)s"
   multi_process:
-    format: "%(asctime)s; %(levelname)-8s; [%(process)d]; %(name)-15s; %(funcName)-15s;%(lineno)-4d; %(message)s"
+    format: "%(asctime)s; %(levelname)-8s; [%(process)d]; %(name)-25s; %(funcName)-30s;%(lineno)-4d; %(message)s"
 handlers:
   console:
     level: INFO
     class: logging.StreamHandler
-    formatter: multi_process
+    formatter: single_line
     stream: ext://sys.stdout
   info_file_handler:
     level: INFO
     class: logging.handlers.WatchedFileHandler
-    formatter: multi_process
+    formatter: single_line
     filename: ./info.log
     # file behavior a=append w=overwrite
     mode: w
@@ -26,7 +26,7 @@ handlers:
   error_file_handler:
     level: WARNING
     class: logging.handlers.WatchedFileHandler
-    formatter: multi_process
+    formatter: single_line
     filename: ./errors.log
     # file behavior a=append w=overwrite
     mode: w
@@ -34,7 +34,7 @@ handlers:
   debug_file_handler:
     level: DEBUG
     class: logging.handlers.WatchedFileHandler
-    formatter: multi_process
+    formatter: single_line
     filename: ./debug.log
     # file behavior a=append w=overwrite
     mode: w
