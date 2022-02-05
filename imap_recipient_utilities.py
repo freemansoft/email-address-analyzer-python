@@ -107,14 +107,10 @@ class ImapRecipientUtilities:
                         rlist,
                         message_definition[self.emc.label_recipients],
                     )
-                    for address in rlist:
-                        message_definition[self.emc.label_recipients].append(address)
-                        filtered_address = pattern_filter(address)
-                        # don't want to add none to the list
-                        if filtered_address:
-                            message_definition[self.emc.label_filtered].append(
-                                filtered_address
-                            )
+                    message_definition[self.emc.label_recipients].extend(rlist)
+        # filter the assembled recipients list -- could change his to create filtered of each attribute
+        filtered_address = pattern_filter(message_definition[self.emc.label_recipients])
+        message_definition[self.emc.label_filtered].extend(filtered_address)
 
         if not message_definition[self.emc.label_recipients]:
             self.logger.error("Error no people attached to def %s", message_definition)

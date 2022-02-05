@@ -32,6 +32,7 @@ import dateutil.relativedelta
 from summaries_sink_csv import SummariesSinkCsv
 from email_message_constants import EmailMessageConstants
 from imap_recipient_utilities import ImapRecipientUtilities
+from address_filters import AddressFilters
 
 import logging
 from loggingconfig import load_logging
@@ -50,22 +51,17 @@ IMAP_SERVER_DEFAULT = "imap.gmail.com"
 SEARCH_FOLDER = ["[Gmail]/Trash", "[Gmail]/All Mail", "INBOX"]
 
 emc = EmailMessageConstants()
-recip_utils = ImapRecipientUtilities()
+imap_recip_utils = ImapRecipientUtilities()
 
 
-def recipient_filter(recipient):
-    """This function not yet implemented"""
-    filtered = recipient
-    logger.debug("filtering %s to %s", recipient, filtered)
-    return filtered
-
-
-def get_recipients_from_folder(folder_name, output_fields, start_date, before_date):
+def get_recipients_from_folder(
+    folder_name, output_fields, start_date, before_date, filters
+):
     """Read each message in a mailbox, write to CSV with folder name"""
     logger.info("Looking at folder %s", folder_name)
 
     folder_recipients = []
-    mails = recip_utils.get_mails_from_folder(folder_name, start_date, before_date)
+    mails = imap_recip_utils.get_mails_from_folder(folder_name, start_date, before_date)
     # convert special characters to underscores - to support GMAIL standard names
     file_name = folder_name.translate(
         {ord(c): "_" for c in "!@#$%^&*()[]{};:,./<>?\|`~-= +"}
@@ -75,9 +71,11 @@ def get_recipients_from_folder(folder_name, output_fields, start_date, before_da
 
     if mails is not None:
         for mail_id in mails:
-            data = recip_utils.fetch_message(mail_id)
-            message_summary = recip_utils.get_summary_from_message(
-                msg=data, folder_name=folder_name, pattern_filter=recipient_filter
+            data = imap_recip_utils.fetch_message(mail_id)
+            message_summary = imap_recip_utils.get_summary_from_message(
+                msg=data,
+                folder_name=folder_name,
+                pattern_filter=filters.recipients_filter,
             )
             logger.debug("%s", message_summary)
             sink_writer.write_row(message_summary)
@@ -126,7 +124,7 @@ def main():
         type=str,
         required=False,
         action="append",
-        help="folder to scan. can Repeat. double quote if contains spaces.",
+        help="folder to scan. Can repeat. double quote if contains spaces.",
     )
     parser.add_argument(
         "-sd",
@@ -180,6 +178,29 @@ def main():
         help="output is unique addresses",
     )
 
+    # make this optional because we can assume [] if not specified
+    parser.add_argument(
+        "-fa",
+        "--filter-address",
+        dest="address_filter",
+        type=str,
+        default=[],
+        required=False,
+        action="append",
+        help="address to filter from results. Can repeat",
+    )
+    # make this optional because we can assume [] if not specified
+    parser.add_argument(
+        "-fd",
+        "--filter-domain",
+        dest="domain_filter",
+        type=str,
+        default=[],
+        required=False,
+        action="append",
+        help="domain to filter from results. Can repeat",
+    )
+
     args = parser.parse_args()
     username = args.username
     password = args.password
@@ -187,12 +208,16 @@ def main():
     before_date = args.before_date
     start_date = args.start_date
 
+    filters = AddressFilters(
+        ignore_addresses=args.address_filter, ignore_domains=args.domain_filter
+    )
+
     # Connect
-    recip_utils.connect(username=username, password=password, server=mail_server)
+    imap_recip_utils.connect(username=username, password=password, server=mail_server)
 
     if args.folder is None:
         # show folders of mail account
-        recip_utils.log_folders()
+        imap_recip_utils.log_folders()
         logger.error(
             "Must specify one of the folders above using --folder : Ex: --folder INBOX"
         )
@@ -211,13 +236,15 @@ def main():
             output_fields=emc.output_fields,
             start_date=start_date,
             before_date=before_date,
+            filters=filters,
         )
         logger.info("%s total recipients in %s", len(one_folder_recipients), folder)
         all_recipients.extend(one_folder_recipients)
-        recip_utils.close_connection()
+        imap_recip_utils.close_connection()
 
-    recip_utils.logout()
+    imap_recip_utils.logout()
 
+    # prepare for summaries
     logger.info("%s total recipients across %s", len(all_recipients), search_folders)
     unique_recipients = set(all_recipients)
     logger.info(
@@ -228,15 +255,18 @@ def main():
 
     # Very unsophisticated way of showing the recipient list
     if args.all_addresses is True:
-        print("\nList of all recipients:", len(all_recipients))
+        all_recipients = filters.recipients_filter(all_recipients)
+        print("\nFiltered of all recipients:", len(all_recipients))
         print("-------------------------------")
         pp(sorted(all_recipients))
     if args.unique_domains is True:
-        print("\nList of UNIQUE domains:", len(unique_domains))
+        unique_domains = filters.recipients_filter(unique_domains)
+        print("\nFiltered of UNIQUE domains:", len(unique_domains))
         print("-------------------------------")
         pp(sorted(unique_domains))
     if args.unique_addresses is True:
-        print("\nList of all UNIQUE recipients:", len(unique_recipients))
+        unique_recipients = filters.recipients_filter(unique_recipients)
+        print("\nFiltered of all UNIQUE recipients:", len(unique_recipients))
         print("-------------------------------")
         pp(sorted(unique_recipients))
 

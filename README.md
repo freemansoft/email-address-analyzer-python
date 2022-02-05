@@ -11,7 +11,7 @@ Intended to be used looking for recipient hacking or unexpected email address.
 The default date range one week of messages _prior to_ today
 
 ```
-usage: extract-all-recipients.py [-h] -u USERNAME -p PASSWORD [-if FOLDER] [--start-date START_DATE] [--before-date BEFORE_DATE] [--imap-server IMAP_SERVER]
+usage: main.py [-h] -u USERNAME -p PASSWORD [-if FOLDER] [-sd START_DATE] [-bd BEFORE_DATE] [--imap-server IMAP_SERVER] [-oud] [-oad] [-oua] [-fa ADDRESS_FILTER] [-fd DOMAIN_FILTER]
 
 Retrieve recipients from matching mailboxes and date range and write to csv files.
 
@@ -35,6 +35,10 @@ optional arguments:
                                           output is all addresses
   -oua, --unique-addresses
                                           output is unique addresses
+  -fa ADDRESS_FILTER, --filter-address ADDRESS_FILTER
+                                          address to filter from results. Can repeat
+  -fd DOMAIN_FILTER, --filter-domain DOMAIN_FILTER
+                                          domain to filter from results. Can repeat                                                               
 ```
 
 Get usage help with 
@@ -43,13 +47,22 @@ Get usage help with
 
 Sample execution for gmail scanning Sent Mail and INBOX
 
-* `python3 extract-all-recipients.py --username foo@bar.com --password <password or app token> --imap-folder "[Gmail]/Sent Mail" --imap-folder INBOX`
+* `python3 main.py --username foo@bar.com --password <password or app token> --imap-folder INBOX`
+* `python3 main.py --username foo@bar.com --password <password or app token> --imap-folder "[Gmail]/Sent Mail" --imap-folder INBOX -oua -sd 2021-12-31`
+* `python3 main.py --username foo@bar.com --password <password or app token> --imap-folder "[Gmail]/Sent Mail" --imap-folder INBOX -oua -fd deathstar.gov`
 
 ### Password
 The app currently requires that you enter your password on the command line which isn't great.
 
 *Users with MFA* would instead use an application token as your password.  GMail has a screen where you can get a token for program use. 
 Note that the token essentially bypasses MFA so destroy the token when you are done with your mail operations.
+
+### Filtering
+The program can filter out addresses or domains as specified on the command line.  Filters do not apply to individual recipient columns in the CSV.
+
+Filtered values are removed :
+* The _Filtered_ column in the CSV 
+* From the command line console output `-oua`, `-oud`, `-oad`
 
 ## Output
 
@@ -74,3 +87,11 @@ Debug output and other levels of loggng are written to
 
 ## Source Code
 Source auto-formatted by visual studio code using the default settings
+
+### Unit Tests
+There is some unit test coverage but not much.
+
+Run tests with
+```
+python3 -m unittest
+```
